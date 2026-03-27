@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$DVD Livestream on Pump.fun</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e0e0e8;
+    --muted: #8888a0;
+    --accent: #a855f7;
+    --accent2: #06b6d4;
+    --glow: rgba(168, 85, 247, 0.3);
+  }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── Noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Navigation ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.85);
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    color: #fff;
+    box-shadow: 0 4px 24px var(--glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px var(--glow);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: rgba(168, 85, 247, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .btn-live {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.3);
+  }
+  .btn-live:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-pump {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    box-shadow: 0 4px 24px rgba(34, 197, 94, 0.3);
+  }
+  .btn-pump:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    animation: livePulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* ── Hero ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 80px 40px 60px;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    max-width: 800px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── Bouncing animation box ── */
+  .bounce-section {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bounce-section h2 {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .bounce-container {
+    width: min(90vw, 800px);
+    height: 400px;
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: 0 0 60px rgba(168, 85, 247, 0.08);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .dvd-logo {
+    position: absolute;
+    width: 120px;
+    height: auto;
+    transition: filter 0.05s;
+  }
+
+  .corner-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--fx) var(--fy), rgba(168,85,247,0.25), transparent 60%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .corner-flash.active {
+    opacity: 1;
+  }
+
+  /* ── How it works ── */
+  .how-section {
+    padding: 80px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .how-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .how-section .subtitle {
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 60px;
+    font-size: 1.05rem;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+  }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .step:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .step-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .step h3 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+  }
+
+  .step p {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  /* ── Devbuy box ── */
+  .devbuy-section {
+    padding: 60px 40px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .devbuy-card {
+    background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(6,182,212,0.08));
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 20px;
+    padding: 48px;
+    max-width: 700px;
+    text-align: center;
+  }
+
+  .devbuy-card .amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+
+  .devbuy-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+  }
+
+  .devbuy-card p {
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 1rem;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  .cta-section p {
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-size: 1.05rem;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 50px 20px 40px; }
+    .bounce-container { height: 280px; }
+    .dvd-logo { width: 80px; }
+    .how-section { padding: 50px 20px; }
+    .devbuy-card { padding: 32px 24px; }
+    .devbuy-card .amount { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="logo-text">$DVD</div>
+  <div class="nav-buttons">
+    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-pump">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      PumpFun
+    </a>
+    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-live">
+      <span class="live-dot"></span>
+      Livestream
+    </a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Every Corner Hit<br>Triggers a <span>DevBuy</span></h1>
+  <p>The DVD logo bounces inside the box 24/7. Every time it hits a corner, the protocol automatically executes a DevBuy of <strong>0.67 SOL</strong> into $DVD. Pure chaos. Pure alpha.</p>
+  <div class="hero-buttons">
+    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Buy on PumpFun
+    </a>
+    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      Watch Livestream
+    </a>
+  </div>
+</section>
+
+<!-- Bouncing DVD Animation -->
+<section class="bounce-section">
+  <h2>Live Preview</h2>
+  <div class="bounce-container" id="bounceBox">
+    <div class="corner-flash" id="cornerFlash"></div>
+    <svg class="dvd-logo" id="dvdLogo" viewBox="0 0 1058.4 465.84" xmlns="http://www.w3.org/2000/svg">
+      <g fill="currentColor">
+        <path d="m91.053 0-13.719 57.707 102.28 0.039063h24c65.747 0 105.91 26.44 94.746 73.4-12.147 51.133-69.613 73.4-130.67 73.4h-22.947l29.787-125.45h-102.27l-43.521 183.2h145.05c109.07 0 212.76-57.573 231.01-131.15 3.3467-13.507 2.8806-47.253-5.3594-67.359-0.21299-0.787-0.42594-1.4-1.1855-3-0.293-0.653-0.56012-3.6412 1.1465-4.2812 0.947-0.36 2.7069 1.4944 2.9336 2.041 0.853 2.24 1.5059 3.9062 1.5059 3.9062l92.293 260.6 234.97-265.21 99.535-0.089844h24c65.76 0 106.25 26.44 95.092 73.4-12.147 51.133-69.947 73.4-131 73.4h-22.959l29.799-125.47h-102.27l-43.533 183.21h145.07c109.05 0 213.48-57.4 231-131.15 17.52-73.75-59.107-131.15-168.69-131.15h-216.4s-57.319 67.88-67.959 80.693c-57.12 68.787-67.241 87.226-68.961 91.986 0.24-4.8-1.8138-23.412-26.174-92.959-6.48-18.52-27.359-79.721-27.359-79.721h-389.25zm408.77 324.16c-276.04 0-499.83 31.72-499.83 70.84s223.79 70.84 499.83 70.84c276.04 0 499.83-31.72 499.83-70.84s-223.79-70.84-499.83-70.84zm-18.094 48.627c63.04 0 114.13 10.573 114.13 23.613s-51.095 23.613-114.13 23.613c-63.027 0-114.13-10.573-114.13-23.613s51.106-23.613 114.13-23.613z"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-section">
+  <h2>How It Works</h2>
+  <p class="subtitle">The simplest tokenomics you've ever seen — powered by nostalgia and geometry.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">01</div>
+      <h3>The DVD Logo Bounces</h3>
+      <p>A classic DVD screensaver logo is bouncing inside a box on a 24/7 livestream. Every wall hit changes the logo color.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">02</div>
+      <h3>Corner Hit = DevBuy</h3>
+      <p>When the logo perfectly hits a corner of the box, the protocol automatically triggers a DevBuy — purchasing $DVD with <strong>0.67 SOL</strong> on the pump.fun.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">03</div>
+      <h3>The Hype Builds</h3>
+      <p>Every bounce builds anticipation. Viewers hold their breath as the logo approaches the corner. When it hits — the chat explodes and the buy goes through.</p>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- DevBuy Card -->
+<section class="devbuy-section">
+  <div class="devbuy-card">
+    <div class="amount">0.67 SOL</div>
+    <h3>Per Corner Hit DevBuy</h3>
+    <p>Every time the DVD logo nails a perfect corner hit, 0.67 SOL is automatically used to buy $DVD on PumpFun. The buys are verifiable on-chain and happen live on stream. No manual intervention — pure automated degen energy.</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Don't Miss the Next Corner Hit</h2>
+  <p>Join the stream, grab your $DVD, and pray for corners.</p>
+  <div class="cta-buttons">
+    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-pump">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Buy $DVD on PumpFun
+    </a>
+    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-live">
+      <span class="live-dot"></span>
+      Watch the Livestream
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>$DVD — The Corner Hit Protocol. Not financial advice. DYOR. Built on Solana.</p>
+</footer>
+
+<script>
+(function() {
+  const box = document.getElementById('bounceBox');
+  const logo = document.getElementById('dvdLogo');
+  const flash = document.getElementById('cornerFlash');
+
+  const colors = [
+    '#a855f7', '#06b6d4', '#ef4444', '#22c55e', '#f59e0b',
+    '#ec4899', '#8b5cf6', '#14b8a6', '#f97316', '#3b82f6',
+    '#e879f9', '#34d399', '#fb923c', '#60a5fa', '#fbbf24'
+  ];
+
+  let colorIndex = 0;
+  let x = 60, y = 60;
+  let vx = 2.2, vy = 1.7;
+  let currentColor = colors[0];
+
+  function getRandomColor() {
+    colorIndex = (colorIndex + 1) % colors.length;
+    return colors[colorIndex];
+  }
+
+  function setColor(color) {
+    currentColor = color;
+    logo.style.color = color;
+    box.style.borderColor = color;
+    box.style.boxShadow = `0 0 60px ${color}33, inset 0 0 60px ${color}08`;
+  }
+
+  function triggerFlash(fx, fy) {
+    flash.style.setProperty('--fx', fx);
+    flash.style.setProperty('--fy', fy);
+    flash.style.background = `radial-gradient(circle at ${fx} ${fy}, ${currentColor}40, transparent 60%)`;
+    flash.classList.add('active');
+    setTimeout(() => flash.classList.remove('active'), 400);
+  }
+
+  setColor(currentColor);
+
+  function animate() {
+    const boxW = box.clientWidth;
+    const boxH = box.clientHeight;
+    const logoW = logo.clientWidth;
+    const logoH = logo.clientHeight;
+
+    x += vx;
+    y += vy;
+
+    let hitX = false, hitY = false;
+    let flashX = '50%', flashY = '50%';
+
+    if (x + logoW >= boxW) {
+      x = boxW - logoW;
+      vx = -vx;
+      hitX = true;
+      flashX = '100%';
+    } else if (x <= 0) {
+      x = 0;
+      vx = -vx;
+      hitX = true;
+      flashX = '0%';
+    }
+
+    if (y + logoH >= boxH) {
+      y = boxH - logoH;
+      vy = -vy;
+      hitY = true;
+      flashY = '100%';
+    } else if (y <= 0) {
+      y = 0;
+      vy = -vy;
+      hitY = true;
+      flashY = '0%';
+    }
+
+    if (hitX || hitY) {
+      const newColor = getRandomColor();
+      setColor(newColor);
+      triggerFlash(flashX, flashY);
+    }
+
+    logo.style.transform = `translate(${x}px, ${y}px)`;
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+})();
+</script>
+
+</body>
+</html>
