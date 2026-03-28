@@ -53,12 +53,18 @@
   }
 
   .logo-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    line-height: 0;
+  }
+
+  .logo-text .nav-logo-img {
+    height: 36px;
+    width: auto;
+    max-width: min(42vw, 200px);
+    display: block;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
   }
 
   .nav-buttons {
@@ -67,6 +73,14 @@
   }
 
   /* ── Buttons ── */
+  .btn-pump-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: block;
+    object-fit: contain;
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -81,16 +95,6 @@
     border: none;
     transition: all 0.25s ease;
     letter-spacing: 0.5px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #7c3aed);
-    color: #fff;
-    box-shadow: 0 4px 24px var(--glow);
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px var(--glow);
   }
 
   .btn-secondary {
@@ -368,6 +372,7 @@
   /* ── Responsive ── */
   @media (max-width: 640px) {
     nav { padding: 16px 20px; }
+    .logo-text .nav-logo-img { height: 28px; }
     .hero { padding: 50px 20px 40px; }
     .bounce-container { height: 280px; }
     .dvd-logo { width: 80px; }
@@ -381,13 +386,15 @@
 
 <!-- Navigation -->
 <nav>
-  <div class="logo-text">$DVD</div>
+  <div class="logo-text">
+    <img src="DVD_logo.svg" alt="$DVD" class="nav-logo-img" height="36" decoding="async">
+  </div>
   <div class="nav-buttons">
-    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-pump">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <a href="https://pump.fun/coin/CDuB4TXxrjHvdNP7WUpyZ3JrUJprZNDxxfaGwpq2pump" target="_blank" rel="noopener" class="btn btn-pump">
+      <img src="pump-fun-seeklogo.svg" alt="" class="btn-pump-icon" width="20" height="20" decoding="async">
       PumpFun
     </a>
-    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-live">
+    <a href="https://pump.fun/coin/CDuB4TXxrjHvdNP7WUpyZ3JrUJprZNDxxfaGwpq2pump" target="_blank" rel="noopener" class="btn btn-live">
       <span class="live-dot"></span>
       Livestream
     </a>
@@ -401,13 +408,13 @@
 <!-- Hero -->
 <section class="hero">
   <h1>Every Corner Hit<br>Triggers a <span>DevBuy</span></h1>
-  <p>The DVD logo bounces inside the box 24/7. Every time it hits a corner, the protocol automatically executes a DevBuy of <strong>0.67 SOL</strong> into $DVD. Pure chaos. Pure alpha.</p>
+  <p>The DVD logo bounces inside the box 24/7. Every time it hits a corner, the protocol automatically executes a DevBuy of <strong>1 SOL</strong> into $DVD. Pure chaos. Pure alpha.</p>
   <div class="hero-buttons">
-    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-primary">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <a href="https://pump.fun/coin/CDuB4TXxrjHvdNP7WUpyZ3JrUJprZNDxxfaGwpq2pump" target="_blank" rel="noopener" class="btn btn-pump">
+      <img src="pump-fun-seeklogo.svg" alt="" class="btn-pump-icon" width="20" height="20" decoding="async">
       Buy on PumpFun
     </a>
-    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-secondary">
+    <a href="https://pump.fun/coin/CDuB4TXxrjHvdNP7WUpyZ3JrUJprZNDxxfaGwpq2pump" target="_blank" rel="noopener" class="btn btn-secondary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
       Watch Livestream
     </a>
@@ -444,7 +451,7 @@
     <div class="step">
       <div class="step-number">02</div>
       <h3>Corner Hit = DevBuy</h3>
-      <p>When the logo perfectly hits a corner of the box, the protocol automatically triggers a DevBuy — purchasing $DVD with <strong>0.67 SOL</strong> on the pump.fun.</p>
+      <p>When the logo perfectly hits a corner of the box, the protocol automatically triggers a DevBuy — purchasing $DVD with <strong>1 SOL</strong> on the pump.fun.</p>
     </div>
     <div class="step">
       <div class="step-number">03</div>
@@ -457,9 +464,9 @@
 <!-- DevBuy Card -->
 <section class="devbuy-section">
   <div class="devbuy-card">
-    <div class="amount">0.67 SOL</div>
+    <div class="amount">1 SOL</div>
     <h3>Per Corner Hit DevBuy</h3>
-    <p>Every time the DVD logo nails a perfect corner hit, 0.67 SOL is automatically used to buy $DVD on PumpFun. The buys are verifiable on-chain and happen live on stream. No manual intervention — pure automated degen energy.</p>
+    <p>Every time the DVD logo nails a perfect corner hit, 1 SOL is automatically used to buy $DVD on PumpFun. The buys are verifiable on-chain and happen live on stream. No manual intervention — pure automated degen energy.</p>
   </div>
 </section>
 
@@ -468,11 +475,11 @@
   <h2>Don't Miss the Next Corner Hit</h2>
   <p>Join the stream, grab your $DVD, and pray for corners.</p>
   <div class="cta-buttons">
-    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-pump">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <a href="https://pump.fun/coin/CDuB4TXxrjHvdNP7WUpyZ3JrUJprZNDxxfaGwpq2pump" target="_blank" rel="noopener" class="btn btn-pump">
+      <img src="pump-fun-seeklogo.svg" alt="" class="btn-pump-icon" width="20" height="20" decoding="async">
       Buy $DVD on PumpFun
     </a>
-    <a href="https://pump.fun/coin/CRKiaZbDfgkhwWFNSPEdBiHiwpaTrRtzfKybZzSupump" target="_blank" rel="noopener" class="btn btn-live">
+    <a href="https://pump.fun/coin/CDuB4TXxrjHvdNP7WUpyZ3JrUJprZNDxxfaGwpq2pump" target="_blank" rel="noopener" class="btn btn-live">
       <span class="live-dot"></span>
       Watch the Livestream
     </a>
